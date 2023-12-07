@@ -27,8 +27,8 @@ try {
     $key = "your_secret";
     $decoded = JWT::decode($token, new Key($key, 'HS256'));
     if ($decoded->user_type == 'seller') {
-        $query = $mysqli->prepare('INSERT INTO products (product_name, description, price, stock_quantity) VALUES (?,?,?,?)');
-        $query->bind_param('ssdi', $_POST['product_name'], $_POST['description'], $_POST['price'],$_POST['stock_quantity']);
+        $query = $mysqli->prepare('UPDATE products SET product_name = ?, description = ?, price=?, stock_quantity=? WHERE product_id = ?');
+        $query->bind_param('ssdii', $_POST['product_name'], $_POST['description'], $_POST['price'],$_POST['stock_quantity'], $_POST['$product_id']);
         $query->execute();
         $response = [];
         $response["status"] = "true";
