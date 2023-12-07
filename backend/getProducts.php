@@ -24,22 +24,15 @@ if (!$token) {
     exit();
 }
 try {
-    $key = "your_secret";
-    $decoded = JWT::decode($token, new Key($key, 'HS256'));
-    if ($decoded->usertype == 0) {
-        $query = $mysqli->prepare('select * from products');
-        $query->execute();
-        $array = $query->get_result();
-        $response = [];
-        $response["permissions"] = true;
-        while ($product = $array->fetch_assoc()) {
-            $response[] = $product;
-        }
-    } else {
-
-        $response = [];
-        $response["permissions"] = false;
+    $query = $mysqli->prepare('select * from products');
+    $query->execute();
+    $array = $query->get_result();
+    $response = [];
+    $response["permissions"] = true;
+    while ($product = $array->fetch_assoc()) {
+        $response[] = $product;
     }
+
     echo json_encode($response);
 } catch (ExpiredException $e) {
     http_response_code(401);
