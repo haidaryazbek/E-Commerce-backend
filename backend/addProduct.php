@@ -24,14 +24,18 @@ if (!$token) {
     exit();
 }
 try {
-    $query = $mysqli->prepare('select * from products');
-    $query->execute();
-    $array = $query->get_result();
-    $response = [];
-    while ($product = $array->fetch_assoc()) {
-        $response[] = $product;
+    $key = "your_secret";
+    $decoded = JWT::decode($token, new Key($key, 'HS256'));
+    if ($decoded->user_type == 'seller') {
+        $query = $mysqli->prepare('INSERT INTO products (product_name, description, price, stock_quantity) VALUES (?,?,?,?)');
+        $query->bind_param('ssii', $_POST['product_name'], $_POST['description'], $_POST['price'],$_POST['stock_quantity']);
+        $query->execute();
+        $response = [];
+        $response["status"] = "true";
+    } else {
+        $response = [];
+        $response["permissions"] = false;
     }
-
     echo json_encode($response);
 } catch (ExpiredException $e) {
     http_response_code(401);

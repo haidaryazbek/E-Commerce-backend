@@ -7,12 +7,12 @@ use Firebase\JWT\JWT;
 
 $email = $_POST['email'];
 $password = $_POST['password'];
-$query = $mysqli->prepare('select username,password from users where email=?');
+$query = $mysqli->prepare('select username,password,user_type from users where email=?');
 $query->bind_param('s', $email);
 $query->execute();
 $query->store_result();
 $num_rows = $query->num_rows;
-$query->bind_result($username, $hashed_password);
+$query->bind_result($username, $hashed_password, $user_type);
 $query->fetch();
 
 
@@ -25,6 +25,7 @@ if ($num_rows == 0) {
         $key = "your_secret_key";
         $payload_array = [];
         $payload_array["username"] = $name;
+        $payload_array["user_type"] = $user_type;
         $payload_array["exp"] = time() + 3600;
         $payload = $payload_array;
         $response['status'] = 'logged in';
